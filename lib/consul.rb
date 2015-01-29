@@ -18,7 +18,12 @@ module Ohai
         unless response.code == '200'
           raise "Encountered error retrieving consul API (returned #{response.code} response)"
         end
-        JSON.load(response.body)
+
+        begin
+          JSON.load(response.body)
+        rescue
+          response.body.gsub!(/"/, '')
+        end
       end
 
       class ServiceHash < Hash

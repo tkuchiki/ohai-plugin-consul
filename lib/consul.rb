@@ -20,9 +20,13 @@ module Ohai
         end
 
         begin
-          JSON.load(response.body)
+          if /^[\{\[]/ =~ response.body
+            JSON.load(response.body)
+          else
+            JSON.load("[#{response.body}]")[0]
+          end
         rescue
-          response.body.gsub!(/"/, '')
+          raise "Invalid json: #{response.body}"
         end
       end
 
